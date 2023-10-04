@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% set jsFilename = 'js/vote.js' %}
+{% block title %}{{ poll.title }}{% endblock %}
+{% block content %}
+    <form id="voteForm" class="needs-validation">
+        <div id="addHelp" class="form-text mb-2">
+            {% if poll.description %}
+                {{ poll.description }}
+            {% else %}
+                Select all days you are available.
+            {% endif %}
+        </div>
+    <div id="alreadyVoted" style="display: none">
+        <div class="already-voted-text border border-warning border-2 mb-2 p-2 rounded-2">
+            You have already voted on this poll.
+            You can either change your vote below or view the results.
+        </div>
+        <div type="button" class="btn btn-primary mb-2 d-block" id="viewResults">View Results</div>
+    </div>
+        <div class="mb-2">
+            <ul class="list-group list-group-flush" id="selectedDaysList">
+                {% for day in poll.days %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center day-item" data-day="{{ day }}">
+                        <div class="displayed-date">
+                            <div class="original-date">{{ day }}</div>
+                            <div class="formatted-date" style="opacity: 0">{{ day }}</div>
+                        </div>
+                        <div class="input-group has-validation option-group">
+                            <div class="d-flex flex-column" role="group" aria-label="Availability options for {{ day }}" id="options-{{ day }}">
+                                <div class="btn-group">
+                                    <input type="radio" class="btn-check" name="options-{{ day }}" id="yes-{{ day }}" data-choice="yes" autocomplete="off" required>
+                                    <label class="btn btn-outline-success" for="yes-{{ day }}">Yes</label>
+
+                                    <input type="radio" class="btn-check" name="options-{{ day }}" id="maybe-{{ day }}" data-choice="maybe" autocomplete="off" required>
+                                    <label class="btn btn-outline-secondary" for="maybe-{{ day }}">Maybe</label>
+
+                                    <input type="radio" class="btn-check" name="options-{{ day }}" id="no-{{ day }}" data-choice="no" autocomplete="off" required>
+                                    <label class="btn btn-outline-danger" for="no-{{ day }}">No</label>
+                                </div>
+
+                                <div class="invalid-feedback radio-feedback">
+                                    Please choose one of the options.
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </form>
+{% endblock %}

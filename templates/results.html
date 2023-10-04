@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% set jsFilename = 'js/results.js' %}
+{% block title %}{{ poll.title }} – Results{% endblock %}
+{% block content %}
+        <div id="addHelp" class="form-text mb-2">
+            {% if poll.description %}
+                {{ poll.description }}
+                <br>
+            {% endif %}
+            Below are the results of the poll.
+            The best option is <span class="best-option">highlighted</span>.
+        </div>
+        <div id="deleteButton" class="btn btn-danger mb-2" style="display: none">Delete poll</div>
+        <div class="mb-2">
+            <ul class="list-group list-group-flush" id="selectedDaysList">
+
+                <input type="hidden" id="pollId" value="{{ poll.id }}">
+                <input type="hidden" id="ownerId" value="{{ poll.owner_id }}">
+
+                {% for day in poll.days %}
+                    {% set yes_votes = poll.day_votes(day, 'yes') %}
+                    {% set maybe_votes = poll.day_votes(day, 'maybe') %}
+                    {% set no_votes = poll.day_votes(day, 'no') %}
+                    {% set best_option = day in best_days %}
+
+                    <li class="list-group-item d-flex justify-content-between align-items-center
+                    day-item ps-1 pe-1 {{ 'best-option' if best_option }}" data-day="{{ day }}">
+                        <div class="displayed-date pe-3 fw-semibold">
+                            <div class="original-date">{{ day }}</div>
+                            <div class="formatted-date" style="opacity: 0">{{ day }}</div>
+                        </div>
+
+                        <!-- We display all votes, separated into yes/no/maybe rows -->
+                        <ul class="list-group list-group-flush w-100 ml-1">
+                            <li class="list-group-item ps-1 pe-1">
+                                <span>Yes ({{ yes_votes|length }}){{ ':' if yes_votes|length > 0 }}</span>
+                                {% for vote in yes_votes %}
+                                    <span class="badge bg-success">{{ vote.user_name | truncate(33, true) }}</span>
+                                {% endfor %}
+                            </li>
+                            <li class="list-group-item ps-1 pe-1">
+                                <span>Maybe ({{ maybe_votes|length }}){{ ':' if maybe_votes|length > 0 }}</span>
+                                {% for vote in maybe_votes %}
+                                    <span class="badge bg-secondary">{{ vote.user_name | truncate(33, true) }}</span>
+                                {% endfor %}
+                            </li>
+                            <li class="list-group-item ps-1 pe-1">
+                                <span>No ({{ no_votes|length }}){{ ':' if no_votes|length > 0 }}</span>
+                                {% for vote in no_votes %}
+                                    <span class="badge bg-danger">{{ vote.user_name | truncate(33, true) }}</span>
+                                {% endfor %}
+                            </li>
+                        </ul>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+{% endblock %}

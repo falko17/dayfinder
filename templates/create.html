@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% set jsFilename = 'js/create.js' %}
+{% block title %}Create a new poll{% endblock %}
+{% block content %}
+<form id="createForm">
+    <div class="mb-2">
+            <label for="eventTitle" class="form-label tg-headline-sm">Event title <span class="text-danger">(required)</span></label>
+        <div class="input-group has-validation">
+            <input type="text" class="form-control" id="eventTitle" required>
+            <div class="invalid-feedback">
+                Please provide a title.
+            </div>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label for="eventDescription" class="form-label tg-headline-sm">Event description</label>
+        <textarea class="form-control" id="eventDescription" rows="3"></textarea>
+    </div>
+    <div class="mb-3">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="eventNotification" aria-describedby="notifyHelp">
+            <label class="form-check-label" for="eventNotification">Send me notifications</label>
+        </div>
+        <div id="notifyHelp" class="form-text">
+            You will receive a notification whenever someone votes.
+        </div>
+    </div>
+    <div class="tg-headline-sm mb-1">Available days <span class="text-danger">(required)</span></div>
+        <div id="addHelp" class="form-text mb-2">
+            Add all possible days on which you want people to vote.
+        </div>
+        <div class="mb-2">
+            <ul class="list-group list-group-flush" id="selectedDaysList">
+            </ul>
+        </div>
+    <div class="has-validation">
+        <div type="button" class="btn btn-primary mb-2 d-block" id="addDayButton" aria-describedby="addHelp" onclick="addDay()">
+            Add new day
+        </div>
+        <div class="invalid-feedback">
+            Please add at least two days.
+        </div>
+    </div>
+</form>
+{% endblock %}

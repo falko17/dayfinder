@@ -1,0 +1,2 @@
+python-telegram-bot[job-queue]~=20.6
+Quart~=0.19.3

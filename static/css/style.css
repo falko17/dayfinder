@@ -1,0 +1,125 @@
+body {
+    /* Setup Bootstrap to use Telegram's theme colors. */
+    --bs-body-bg: var(--tg-theme-bg-color, white);
+    --bs-body-color: var(--tg-theme-text-color, var(--bs-dark));
+    --bs-secondary: var(--tg-theme-hint-color, #aaa);
+    --bs-secondary-color: var(--tg-theme-hint-color, #aaa);
+    --bs-primary: var(--tg-theme-button-color, #06d);
+    --bs-primary-color: var(--tg-theme-button-color, #06d);
+    --bs-border-color: color-mix(in srgb, var(--tg-theme-hint-color, #aaa), #00000000 20%);
+    --border-color: color-mix(in srgb, var(--tg-theme-button-color), #00000000 60%);
+
+    /* We want to use the font closest to the system font of the user. */
+    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu;
+}
+
+a {
+    /* Use Telegram's link color. */
+    color: var(--tg-theme-link-color, var(--bs-primary, #06d));
+}
+
+.btn-primary {
+    /* Use Telegram's button color. */
+    background: var(--tg-theme-button-color, var(--bs-primary));
+    color: var(--tg-theme-button-text-color, var(--bs-light));
+    border: var(--bs-btn-border-width) solid var(--tg-theme-button-color, var(--bs-primary));
+}
+
+.btn-primary:focus {
+    background: var(--tg-theme-button-color, var(--bs-primary));
+    color: var(--tg-theme-button-text-color, var(--bs-light));
+}
+
+.btn-primary:hover {
+    background: var(--tg-theme-button-color, var(--bs-primary));
+    border-color: var(--tg-theme-button-color, var(--bs-primary));
+    color: var(--tg-theme-button-text-color, var(--bs-light));
+}
+
+.btn-primary:active {
+    /* Sorry for the !important, but without it, overriding Bootstrap colors would become much more annoying. */
+    background: color-mix(in srgb,var(--tg-theme-button-color),#000 15%) !important;
+    border-color: color-mix(in srgb,var(--tg-theme-button-color),#000 15%) !important;
+    color: var(--tg-theme-button-text-color, var(--bs-light)) !important;
+}
+
+.tg-headline-sm {
+    /* Style the headline close to the one in Telegram. */
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--tg-theme-button-color, #06d);
+}
+
+.tg-headline {
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.form-check-input:checked {
+    /* Use a darker version of the button color for the checkmark. */
+    background-color: var(--border-color, #06d);
+    border-color: var(--border-color, #06d);
+}
+
+.form-control:focus, .form-check-input:focus {
+    /* Use a darker version of the button color for the focus. */
+    box-shadow: 0 0 0 .25rem var(--border-color);
+    border-color: var(--border-color);
+}
+
+input[type="date"] {
+    border: none;
+    color: var(--tg-theme-text-color, var(--bs-dark));
+    background-color: var(--tg-theme-bg-color, white);
+    transition: all 0.3s ease;
+    outline: none;
+    width: auto;
+}
+
+input[type="date"]::before {
+    color: var(--tg-theme-text-color, var(--bs-dark));
+}
+
+.displayed-date {
+    display: grid;
+    white-space: nowrap;
+}
+
+.original-date, .formatted-date {
+    transition: all 0.3s linear;
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.option-group {
+    width: auto;
+}
+
+.option-group .btn-group {
+    display: flex;
+}
+
+.was-validated .btn-group:has(:invalid) + .radio-feedback {
+    /* The validation feedback should be displayed when the radio input is invalid. */
+    display: block;
+}
+
+.day-item:hover {
+    /* We turn down the opacity of the color slightly. */
+    background: color-mix(in srgb,var(--tg-theme-hint-color, #aaa),#00000000 90%);
+}
+
+.best-option {
+    /* We turn down the opacity of the color slightly. */
+    /* Sorry for the !important, we need it to override the background set by the hovering. */
+    background: color-mix(in srgb,var(--tg-theme-button-color, #06d),#FFFFFF00 80%) !important;
+}
+
+.day-item:hover .list-group-item, .best-option .list-group-item {
+    /* Inner list-group-item should just have the background of the parent. */
+    background: transparent;
+}
+
+hr {
+    color: var(--tg-theme-hint-color, inherit);
+}
