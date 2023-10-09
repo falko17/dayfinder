@@ -77,7 +77,9 @@ async def vote_poll():
 
     vote_days = {k: VoteType[v] for k, v in data["days"].items()}
     old_vote = None
-    event_vote = next(filter(lambda x: x.user_id == int(user_info["id"]), event.votes), None)
+    event_vote = next(
+        filter(lambda x: x.user_id == int(user_info["id"]), event.votes), None
+    )
     if event_vote is not None:
         # User already voted, edit vote accordingly
         old_vote = event_vote.vote
@@ -89,7 +91,9 @@ async def vote_poll():
             user_name = user_info["first_name"]
             if "last_name" in user_info and user_info["last_name"] != "":
                 user_name += f' {user_info["last_name"]}'
-        event_vote = EventVote(user_id=user_info["id"], user_name=user_name, vote=vote_days)
+        event_vote = EventVote(
+            user_id=user_info["id"], user_name=user_name, vote=vote_days
+        )
         event.votes.append(event_vote)
         exists = False
     await shared_context.telegram_app.update_persistence()
@@ -97,7 +101,7 @@ async def vote_poll():
     # Only notify if the user has enabled notifications and if the vote has changed.
     if event.notify and old_vote != vote_days:
         vote_adjective = "Edited" if exists else "New"
-        by_line = f' by {event_vote.user_name}' if not event.anonymous else ''
+        by_line = f" by {event_vote.user_name}" if not event.anonymous else ""
         try:
             await shared_context.telegram_app.bot.send_message(
                 chat_id=event.owner_id,

@@ -29,6 +29,7 @@ from telegram.ext import (
     InlineQueryHandler,
     Application,
     filters,
+    CallbackQueryHandler,
 )
 
 from src.arguments import parse_arguments
@@ -94,36 +95,16 @@ async def results(update: Update, context: ContextTypes.DEFAULT_TYPE):
     as users would normally use the inline query, or a link, to view results.
     """
     if not context.args or len(context.args) != 1:
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text="Please specify the poll ID, i.e., do <code>/results ID-HERE</code>.",
+        await update.effective_message.reply_text(
+            "Please specify the poll ID, i.e., do <code>/results ID-HERE</code>.",
             parse_mode=ParseMode.HTML,
             reply_markup=ReplyKeyboardRemove(),
         )
         return
-    elif update.effective_chat.type != "private":
-        await update.effective_message.reply_text(
-            "Please message me privately to view your polls.",
-            reply_markup=ReplyKeyboardRemove(),
-        )
-        return
 
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=get_result_text(context.args[0]),
+    await update.effective_message.reply_text(
+        get_result_text(context.args[0]),
         parse_mode=ParseMode.HTML,
-        reply_markup=InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        "Detailed results",
-                        web_app=WebAppInfo(
-                            url=f"{shared_context.args.web_url}/results?poll_id={context.args[0]}"
-                        ),
-                    )
-                ]
-            ]
-        ),
     )
 
 
@@ -132,14 +113,7 @@ async def polls(update: Update, context: ContextTypes.DEFAULT_TYPE):
     Called when the user sends the /polls command.
     Displays a list of all polls the user has created.
     """
-    if update.effective_chat.type != "private":
-        await update.effective_message.reply_text(
-            "Please message me privately to view your polls.",
-            reply_markup=ReplyKeyboardRemove(),
-        )
-        return
-
-    events = shared_context.telegram_app.bot_data["events"]
+    events = context.bot_data["events"]
     relevant = sorted(
         filter(lambda poll: poll.owner_id == update.effective_user.id, events.values()),
         key=lambda poll: poll.time_created,
@@ -149,7 +123,7 @@ async def polls(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.effective_message.reply_text("You have no polls yet.")
         return
 
-    text = "Choose a poll below."
+    text = "Choose a poll whose results you want to see."
     if len(relevant) > 20:
         text += "\n\n<i>Only the 20 most recent polls are shown.</i>"
         relevant = relevant[:20]
@@ -158,14 +132,7 @@ async def polls(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text,
         reply_markup=InlineKeyboardMarkup(
             [
-                [
-                    InlineKeyboardButton(
-                        poll.title,
-                        web_app=WebAppInfo(
-                            url=f"{shared_context.args.web_url}/results?poll_id={poll.id}"
-                        ),
-                    )
-                ]
+                [InlineKeyboardButton(poll.title, callback_data=str(poll.id))]
                 for poll in relevant
             ]
         ),
@@ -194,10 +161,33 @@ async def generate_poll_buttons(
     ]
 
 
+async def callback_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """
+    Called when the user clicks a button in a /polls message.
+    Displays the results for the clicked poll.
+    """
+    query = update.callback_query
+    if query.data not in context.bot_data["events"]:
+        await query.answer("This poll no longer exists.")
+        await query.message.delete()
+        return
+
+    poll = context.bot_data["events"][query.data]
+    if poll.owner_id != query.from_user.id:
+        await query.answer("You are not the owner of this poll.")
+        await query.message.delete()
+        return
+
+    await query.answer()
+    await query.message.edit_text(
+        text=get_result_text(query.data), parse_mode=ParseMode.HTML
+    )
+
+
 def get_result_text(poll_id) -> str:
     """
     Generates the text for the results of the given poll.
-    :param poll_id: The ID of the poll to generate results for.
+    :param poll_id: The ID of the poll for which results shall be generated.
     :return: The text for the results of the given poll.
     """
     poll: Event = shared_context.telegram_app.bot_data["events"][poll_id]
@@ -216,6 +206,10 @@ def get_result_text(poll_id) -> str:
             result_text += "</b>"
         result_text += "\n"
 
+    result_text += (
+        f"\n\n<a href='https://t.me/{shared_context.telegram_app.bot.username}"
+        f"/results?startapp={str(poll.id)}'>Click for details</a>"
+    )
     return result_text
 
 
@@ -226,7 +220,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.inline_query.query
 
     inline_results = []
-    events = shared_context.telegram_app.bot_data["events"]
+    events = context.bot_data["events"]
     if not query:
         relevant = filter(
             lambda poll: poll.owner_id == update.effective_user.id, events.values()
@@ -268,10 +262,7 @@ def get_inline_query_results(
             url=f"https://t.me/{bot_name}/results?startapp={str(poll.id)}",
             hide_url=True,
             input_message_content=InputTextMessageContent(
-                message_text=get_result_text(str(poll.id))
-                + "\n\n"
-                + f"<a href='https://t.me/{bot_name}/results?startapp={str(poll.id)}'>"
-                f"Click for details</a>",
+                message_text=get_result_text(str(poll.id)),
                 parse_mode=ParseMode.HTML,
             ),
         ),
@@ -301,12 +292,9 @@ async def dump(update: Update, context: ContextTypes.DEFAULT_TYPE):
     Sends a dump of the bot's data to the user.
     This should only be callable by admins.
     """
-    pprint.pprint(shared_context.telegram_app.bot_data["events"])
+    pprint.pprint(context.bot_data["events"])
     try:
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=str(shared_context.telegram_app.bot_data["events"]),
-        )
+        await update.effective_message.reply_text(str(context.bot_data["events"]))
     except TelegramError as e:
         # Message is probably too long.
         logging.warning(
@@ -390,6 +378,7 @@ async def main():
         CommandHandler("start", start, filters=filters.ChatType.PRIVATE),
         CommandHandler("results", results),
         CommandHandler("polls", polls),
+        CallbackQueryHandler(callback_query),
         InlineQueryHandler(inline_query),
     ]
     if shared_context.args.admin_ids is None:
