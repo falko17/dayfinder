@@ -201,7 +201,7 @@ def get_result_text(poll_id) -> str:
     :return: The text for the results of the given poll.
     """
     poll: Event = shared_context.telegram_app.bot_data["events"][poll_id]
-    best_days = set(poll.best_days())
+    best_days = poll.best_days()
     result_text = f"Results for <i>{html.escape(poll.title)}</i>\n\n"
     for day in poll.days:
         yes_votes = poll.num_votes(day, VoteType.yes)

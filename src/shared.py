@@ -88,26 +88,30 @@ class Event:
         """
         return max(self.num_votes(day, *vote_types) for day in self.days)
 
-    def best_days(self) -> list[str]:
+    def best_days(self) -> set[str]:
         """
         Determines the most suitable days for the event.
         Most suitable, in this case, means the days with the largest number of yes votes.
         If there are multiple such days, we choose from these the ones with the largest number of maybe votes.
+        If there are no days with at least one yes vote, we return an empty list.
         :return: A list of the most suitable days for the event.
         """
         max_yes = self.max_votes(VoteType.yes)
-        best_days = [
+        if max_yes == 0:
+            return set()
+
+        best_days = set(
             day for day in self.days if self.num_votes(day, VoteType.yes) == max_yes
-        ]
+        )
         if len(best_days) == 1:
             # Just one best day, so we return immediately.
             return best_days
 
         # We need to get max_maybe from best_days, so we can't just use self.max_votes.
         max_maybe = max(self.num_votes(day, VoteType.maybe) for day in best_days)
-        best_days = [
+        best_days = set(
             day for day in best_days if self.num_votes(day, VoteType.maybe) == max_maybe
-        ]
+        )
         return best_days
 
 
