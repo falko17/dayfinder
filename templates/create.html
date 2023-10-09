@@ -29,17 +29,17 @@
         <div id="addHelp" class="form-text mb-2">
             Add all possible days on which you want people to vote.
         </div>
+        <div class="has-validation">
+            <div type="button" class="btn btn-primary mb-2 d-block" id="addDayButton" aria-describedby="addHelp" onclick="addDay()">
+                Add new day
+            </div>
+            <div class="invalid-feedback">
+                Please add at least two days.
+            </div>
+        </div>
         <div class="mb-2">
             <ul class="list-group list-group-flush" id="selectedDaysList">
             </ul>
         </div>
-    <div class="has-validation">
-        <div type="button" class="btn btn-primary mb-2 d-block" id="addDayButton" aria-describedby="addHelp" onclick="addDay()">
-            Add new day
-        </div>
-        <div class="invalid-feedback">
-            Please add at least two days.
-        </div>
-    </div>
 </form>
 {% endblock %}
