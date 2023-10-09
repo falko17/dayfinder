@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import asyncio
 import html
+import itertools
 import logging
 import pprint
 from asyncio import AbstractEventLoop
@@ -238,30 +239,60 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
             and poll.owner_id == update.effective_user.id,
             events.values(),
         )
-    inline_results += [
-        InlineQueryResultArticle(
-            id=str(poll.id),
-            title=f"Results for {poll.title}"[:50],
-            description=poll.description[:200]
-            if poll.description
-            else "Click to send results.",
-            url=f"https://t.me/{context.bot.username}/results?startapp={str(poll.id)}",
-            hide_url=True,
-            input_message_content=InputTextMessageContent(
-                message_text=get_result_text(str(poll.id))
-                + "\n\n"
-                + f"<a href='https://t.me/{context.bot.username}/results?startapp={str(poll.id)}'>"
-                f"Click for details</a>",
-                parse_mode=ParseMode.HTML,
-            ),
-        )
+    inline_results += itertools.chain.from_iterable(
+        get_inline_query_results(poll, context.bot.username, update.effective_user.id)
         for poll in relevant
-    ]
+    )
 
     await update.inline_query.answer(
         inline_results,
         button=InlineQueryResultsButton("Create new poll", start_parameter="new"),
     )
+
+
+def get_inline_query_results(
+    poll: Event, bot_name: str, user_id: int
+) -> list[InlineQueryResultArticle]:
+    """
+    Generates the inline query results for the given poll.
+    :param poll: The poll to generate results for.
+    :param bot_name: The bot's username.
+    :param user_id: The ID of the user who sent the inline query.
+    :return: The inline query results for the given poll.
+    """
+    result_articles = [
+        InlineQueryResultArticle(
+            id=str(poll.id) + "-results",
+            title=f"Results for {poll.title}"[:70],
+            description="Click to send the results page for this poll.",
+            url=f"https://t.me/{bot_name}/results?startapp={str(poll.id)}",
+            hide_url=True,
+            input_message_content=InputTextMessageContent(
+                message_text=get_result_text(str(poll.id))
+                + "\n\n"
+                + f"<a href='https://t.me/{bot_name}/results?startapp={str(poll.id)}'>"
+                f"Click for details</a>",
+                parse_mode=ParseMode.HTML,
+            ),
+        ),
+    ]
+    if poll.owner_id == user_id:
+        result_articles.append(
+            InlineQueryResultArticle(
+                id=str(poll.id) + "-vote",
+                title=f"Voting page for {poll.title}"[:70],
+                description="Click to send the voting page for this poll.",
+                url=f"https://t.me/{bot_name}/vote?startapp={str(poll.id)}",
+                hide_url=True,
+                input_message_content=InputTextMessageContent(
+                    message_text=f"<a href='https://t.me/{bot_name}/vote?startapp={str(poll.id)}'>"
+                    f'Click here to vote on "{poll.title}"</a>',
+                    parse_mode=ParseMode.HTML,
+                ),
+            ),
+        )
+
+    return result_articles
 
 
 async def dump(update: Update, context: ContextTypes.DEFAULT_TYPE):
