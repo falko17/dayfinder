@@ -112,14 +112,49 @@ input[type="date"]::before {
 .best-option {
     /* We turn down the opacity of the color slightly. */
     /* Sorry for the !important, we need it to override the background set by the hovering. */
-    background: color-mix(in srgb,var(--tg-theme-button-color, #06d),#FFFFFF00 80%) !important;
+    background: color-mix(in srgb,var(--bs-success, #06d),#FFFFFF00 70%) !important;
 }
 
-.day-item:hover .list-group-item, .best-option .list-group-item {
-    /* Inner list-group-item should just have the background of the parent. */
-    background: transparent;
+#selectedDaysList {
+    --bs-border-width: 2px;
 }
 
 hr {
     color: var(--tg-theme-hint-color, inherit);
+}
+
+/* The following styles are for the accordion. */
+
+.accordion {
+    --bs-accordion-bg: transparent;
+    --bs-accordion-border-color: transparent;
+}
+
+.yes-votes {
+    background-color: color-mix(in srgb,var(--bs-success, #06d),#FFFFFF00 85%);
+}
+
+.maybe-votes {
+    background-color: color-mix(in srgb,var(--bs-secondary, #d0d),#FFFFFF00 85%);
+}
+
+.no-votes {
+    background-color: color-mix(in srgb,var(--bs-danger, #d00),#FFFFFF00 85%);
+}
+
+.dark .accordion-button::after {
+    filter: invert(1);
+}
+
+.accordion-button:disabled::after {
+    display: none;
+}
+
+.accordion-button:focus {
+    box-shadow: none;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: transparent;
+    color: var(--tg-theme-text-color, var(--bs-dark));
 }

@@ -18,8 +18,7 @@ function replaceDateElement(element) {
     const original = element.getElementsByClassName("original-date")[0];
     const formatted = element.getElementsByClassName("formatted-date")[0];
     // YYYY-MM-DD
-    const parts = original.innerText.split("-");
-    formatted.innerText = new Date(parts[0], parts[1] - 1, parts[2]).toLocaleDateString();
+    formatted.textContent = new Date(original.textContent).toLocaleDateString();
     original.style.opacity = 0;
     formatted.style.opacity = 1;
 }

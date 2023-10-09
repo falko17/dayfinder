@@ -274,7 +274,6 @@ async def results():
             404,
         )
     poll = shared_context.telegram_app.bot_data["events"][poll_id]
-    # TODO: Expand days if more than N / list voting date on click?
     return await render_template("results.html", poll=poll, best_days=poll.best_days())
 
 

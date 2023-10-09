@@ -1,8 +1,20 @@
 Telegram.WebApp.MainButton.setText('Share with chat').show().onClick(share);
 
+// The button to expand or collapse all elements.
+let expandButton;
+
+// Contains the collapse elements.
+let collapseElements;
+
 window.addEventListener('load', function () {
+
+    if (Telegram.WebApp.colorScheme === "dark") {
+        document.body.classList.add("dark");
+    }
+
     // We want to display all dates in the user's locale.
     replaceDateElements();
+
 
     const ownerId = Number(document.getElementById("ownerId").value);
     // It's fine to use the unsafe version of initData here – the server will validate the ID on deletion.
@@ -12,8 +24,47 @@ window.addEventListener('load', function () {
         deleteButton.onclick = askDeletePoll;
     }
 
+    // We only want non-empty groups to be expandable.
+    collapseElements = Array.from(document.getElementsByClassName('collapse'))
+        .filter(element => element.getElementsByClassName('badge').length > 0);
+    expandButton = document.getElementById("expandButton");
+    expandButton.onclick = expandCollapseAll;
+
+    // We initialize all badges to display the vote's date in the user's locale.
+    const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+    for (const popoverTriggerEl of popoverTriggerList) {
+        popoverTriggerEl.dataset.bsContent = new Date(popoverTriggerEl.dataset.bsContent).toLocaleString();
+        new bootstrap.Popover(popoverTriggerEl, {trigger: "focus",});
+    }
+
     Telegram.WebApp.expand();
 });
+
+/**
+ * Expands or collapses all elements, depending on the current state.
+ */
+function expandCollapseAll() {
+    const collapse = expandButton.textContent === "Expand all";
+    if (collapse) {
+        expandButton.textContent = "Collapse all";
+    } else {
+        expandButton.textContent = "Expand all";
+    }
+
+    // When expanding all elements, we want to allow expanding multiple accordions per group.
+    // Therefore, we remove the data-bs-parent attribute first.
+    // Then, we can actually expand or collapse all elements.
+    for (const element of collapseElements) {
+        // NOTE: The bootstrap.Collapse element must be constructed *after* bsParent has been modified.
+        if (collapse) {
+            delete element.dataset.bsParent;
+            new bootstrap.Collapse(element, {toggle: false}).show();
+        } else {
+            element.dataset.bsParent = element.dataset.parent;
+            new bootstrap.Collapse(element, {toggle: false}).hide();
+        }
+    }
+}
 
 /**
  * Closes the webapp and allows the user to share the poll with a chat.
@@ -23,6 +74,9 @@ function share() {
     Telegram.WebApp.switchInlineQuery(pollId, ["users", "groups", "channels"]);
 }
 
+/**
+ * Asks the user if they really want to delete the poll and calls deletePoll if they confirm.
+ */
 function askDeletePoll() {
     Telegram.WebApp.showPopup({
         title: "Delete poll?",
@@ -34,6 +88,10 @@ function askDeletePoll() {
     }, (id) => deletePoll(id === "ok"));
 }
 
+/**
+ * Deletes the poll if the user confirmed the deletion.
+ * @param okay Whether the user confirmed the deletion.
+ */
 async function deletePoll(okay) {
     if (!okay) {
         return;
