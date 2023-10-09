@@ -42,6 +42,7 @@ class Event:
         owner_id: The Telegram ID of the user who created the event.
         days: A list of the days on which the event can be held.
         notify: Whether to notify users when the event is created.
+        anonymous: Whether to hide the names of users who voted.
         votes: A list of the votes cast on the event.
         description: A description of the event.
         id: The UUID of the event.
@@ -52,6 +53,7 @@ class Event:
     owner_id: int
     days: list[str]
     notify: bool
+    anonymous: bool
     votes: list["EventVote"] = field(default_factory=list)
     description: str = ""
     id: uuid.UUID = field(default_factory=uuid.uuid4)
@@ -122,7 +124,9 @@ class EventVote:
 
     Attributes:
         user_id: The Telegram ID of the user who cast the vote.
+                 Will be saved even if this is an anonymous vote, so that we can still count the votes.
         user_name: The name (first name and last name, space-separated) of the user who cast the vote.
+                   Can be empty if this is an anonymous vote.
         vote: A dictionary mapping days to the type of vote cast on that day.
         time_created: The time at which the vote was cast.
     """

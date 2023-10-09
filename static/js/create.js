@@ -107,6 +107,7 @@ async function savePoll(okay) {
     const title = document.getElementById("eventTitle").value;
     const description = document.getElementById("eventDescription").value;
     const notification = document.getElementById("eventNotification").checked;
+    const anonymous = document.getElementById("eventAnonymous").checked;
     const days = Array.from(dayList.children).map(day => day.getElementsByTagName("input")[0].value);
 
     try {
@@ -120,6 +121,7 @@ async function savePoll(okay) {
                 description: description,
                 notification: notification,
                 days: days,
+                anonymous: anonymous,
                 initData: Telegram.WebApp.initData,
             })
         });

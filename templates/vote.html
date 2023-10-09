@@ -11,7 +11,11 @@
             {% endif %}
         </div>
         <div id="addHelp" class="form-text mb-2">
-            <em>Your vote, including your name, will be viewable by anyone with access to this poll.</em>
+            {% if poll.anonymous %}
+                <em>Your vote will be anonymous.</em>
+            {% else %}
+                <em>Your vote, including your name, will be visible to anyone with access to this poll.</em>
+            {% endif %}
         </div>
     <div id="alreadyVoted" style="display: none">
         <div class="already-voted-text border border-warning border-2 mb-2 p-2 rounded-2">

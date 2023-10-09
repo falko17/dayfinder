@@ -20,25 +20,32 @@ window.addEventListener('load', function () {
     // It's fine to use the unsafe version of initData here – the server will validate the ID on deletion.
     if (Object.keys(Telegram.WebApp.initDataUnsafe).length > 0 && Telegram.WebApp.initDataUnsafe.user.id === ownerId) {
         const deleteButton = document.getElementById("deleteButton");
-        deleteButton.style.display = "block";
+        deleteButton.classList.remove("d-none");
+        deleteButton.classList.add("d-block");
         deleteButton.onclick = askDeletePoll;
 
         const shareButton = document.getElementById("shareVoteButton");
-        shareButton.style.display = "block";
+        shareButton.classList.remove("d-none");
+        shareButton.classList.add("d-block");
         shareButton.onclick = askShareVote;
     }
 
-    // We only want non-empty groups to be expandable.
-    collapseElements = Array.from(document.getElementsByClassName('collapse'))
-        .filter(element => element.getElementsByClassName('badge').length > 0);
-    expandButton = document.getElementById("expandButton");
-    expandButton.onclick = expandCollapseAll;
+    const isAnonymous = document.getElementById("isAnonymous").value === "True";
+    if (!isAnonymous) {
+        // We only want non-empty groups to be expandable.
+        collapseElements = Array.from(document.getElementsByClassName('collapse'))
+            .filter(element => element.getElementsByClassName('badge').length > 0);
+        expandButton = document.getElementById("expandButton");
+        expandButton.classList.remove("d-none");
+        expandButton.classList.add("d-block");
+        expandButton.onclick = expandCollapseAll;
 
-    // We initialize all badges to display the vote's date in the user's locale.
-    const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
-    for (const popoverTriggerEl of popoverTriggerList) {
-        popoverTriggerEl.dataset.bsContent = new Date(popoverTriggerEl.dataset.bsContent).toLocaleString();
-        new bootstrap.Popover(popoverTriggerEl, {trigger: "focus",});
+        // We initialize all badges to display the vote's date in the user's locale.
+        const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+        for (const popoverTriggerEl of popoverTriggerList) {
+            popoverTriggerEl.dataset.bsContent = new Date(popoverTriggerEl.dataset.bsContent).toLocaleString();
+            new bootstrap.Popover(popoverTriggerEl, {trigger: "focus"});
+        }
     }
 
     Telegram.WebApp.expand();

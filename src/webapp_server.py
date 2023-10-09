@@ -32,6 +32,7 @@ async def create_poll():
         days=list(dict.fromkeys(data["days"])),
         description=data["description"],
         notify=data["notification"],
+        anonymous=data["anonymous"],
         owner_id=user_info["id"],
     )
     if "events" not in shared_context.telegram_app.bot_data:
@@ -76,35 +77,32 @@ async def vote_poll():
 
     vote_days = {k: VoteType[v] for k, v in data["days"].items()}
     old_vote = None
-    if (
-        event_vote := next(
-            filter(lambda x: x.user_id == int(user_info["id"]), event.votes), None
-        )
-    ) is not None:
+    event_vote = next(filter(lambda x: x.user_id == int(user_info["id"]), event.votes), None)
+    if event_vote is not None:
         # User already voted, edit vote accordingly
         old_vote = event_vote.vote
         event_vote.vote = vote_days
         exists = True
     else:
-        user_name = user_info["first_name"]
-        if "last_name" in user_info and user_info["last_name"] != "":
-            user_name += f' {user_info["last_name"]}'
-        event_vote = EventVote(
-            user_id=user_info["id"], user_name=user_name, vote=vote_days
-        )
+        user_name = "[Anonymous]"
+        if not event.anonymous:
+            user_name = user_info["first_name"]
+            if "last_name" in user_info and user_info["last_name"] != "":
+                user_name += f' {user_info["last_name"]}'
+        event_vote = EventVote(user_id=user_info["id"], user_name=user_name, vote=vote_days)
         event.votes.append(event_vote)
         exists = False
     await shared_context.telegram_app.update_persistence()
 
     # Only notify if the user has enabled notifications and if the vote has changed.
     if event.notify and old_vote != vote_days:
+        vote_adjective = "Edited" if exists else "New"
+        by_line = f' by {event_vote.user_name}' if not event.anonymous else ''
         try:
             await shared_context.telegram_app.bot.send_message(
                 chat_id=event.owner_id,
-                text=f'{"Edited" if exists else "New"} vote on your poll'
-                f' "{event.title}" by {event_vote.user_name}!\n\n'
-                "You can view the results of your polls at any time"
-                f" using /polls.",
+                text=f'{vote_adjective} vote on your poll "{event.title}"{by_line}!\n\n'
+                "You can view the results of your polls at any time using /polls.",
             )
         except TelegramError:
             # User probably blocked bot, this is fine. We should create a warning, though.
@@ -236,7 +234,6 @@ async def create():
     """
     Renders the create page.
     """
-    # TODO: anonymous poll
     return await render_template("create.html")
 
 

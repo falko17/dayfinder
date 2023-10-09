@@ -18,11 +18,20 @@
     </div>
     <div class="mb-3">
         <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="eventAnonymous" aria-describedby="anonymousHelp">
+            <label class="form-check-label" for="eventAnonymous">Anonymous votes</label>
+        </div>
+        <div id="anonymousHelp" class="form-text">
+            If you enable this option, the names of the voters will not be recorded.
+        </div>
+    </div>
+    <div class="mb-3">
+        <div class="form-check">
             <input type="checkbox" class="form-check-input" id="eventNotification" aria-describedby="notifyHelp">
             <label class="form-check-label" for="eventNotification">Send me notifications</label>
         </div>
         <div id="notifyHelp" class="form-text">
-            You will receive a notification whenever someone votes.
+            If you enable this option, you will receive a notification whenever someone votes.
         </div>
     </div>
     <div class="tg-headline-sm mb-1">Available days <span class="text-danger">(required)</span></div>

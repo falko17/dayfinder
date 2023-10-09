@@ -8,18 +8,26 @@
                 <br>
             {% endif %}
             Below are the results of the poll.
-            Click on votes to see the date and time they were cast.<br>
-            The best option is <span class="best-option">highlighted</span>.
+            {% if poll.is_anonymous %}
+                This poll is anonymous, so you can't see who voted for what.
+            {% else %}
+                Click on votes to see the date and time they were cast.
+            {% endif %}
+            <br>
+            {% if best_days|length > 0 %}
+                The best option is <span class="best-option">highlighted</span>.
+            {% endif %}
         </div>
-        <div id="deleteButton" class="btn btn-danger mb-2" style="display: none">Delete poll</div>
-        <div id="shareVoteButton" class="btn btn-primary mb-2" style="display: none">Share voting link</div>
-        <div id="expandButton" class="btn btn-primary mb-2 d-block">Expand all</div>
+        <div id="deleteButton" class="btn btn-danger mb-2 d-none">Delete poll</div>
+        <div id="shareVoteButton" class="btn btn-primary mb-2 d-none">Share voting link</div>
+        <div id="expandButton" class="btn btn-primary mb-2 d-none">Expand all</div>
         <div class="mb-2">
             <ul class="list-group list-group-flush" id="selectedDaysList">
 
                 <input type="hidden" id="pollId" value="{{ poll.id }}">
                 <input type="hidden" id="botUsername" value="{{ bot_username }}">
                 <input type="hidden" id="ownerId" value="{{ poll.owner_id }}">
+                <input type="hidden" id="isAnonymous" value="{{ poll.anonymous }}">
 
                 {% for day in poll.days %}
                     {% set yes_votes = poll.day_votes(day, 'yes') %}
@@ -39,7 +47,7 @@
                             <div class="accordion-item ps-0 pe-0 yes-votes">
                                 <h2 class="accordion-header">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                            {{ 'disabled' if yes_votes|length == 0 }}
+                                            {{ 'disabled' if poll.anonymous or yes_votes|length == 0 }}
                                             data-bs-target="#yes-{{ day }}"
                                             aria-expanded="false" aria-controls="yes-{{ day }}">
                                         <strong>{{ yes_votes|length }} yes</strong>&nbsp;votes
@@ -49,6 +57,7 @@
                                      aria-labelledby="yes-{{ day }}" data-bs-parent="#votes-{{ day }}"
                                      data-parent="#votes-{{ day }}">
                                     <div class="accordion-body">
+                                    {% if not poll.anonymous %}
                                         {% for vote in yes_votes %}
                                             <a class="badge bg-success text-nowrap" tabindex="0"
                                                data-bs-trigger="focus" data-bs-placement="top"
@@ -56,13 +65,14 @@
                                                 {{ vote.user_name | truncate(33, true) }}
                                             </a>
                                         {% endfor %}
+                                    {% endif %}
                                     </div>
                                 </div>
                             </div>
                             <div class="accordion-item ps-0 pe-0 maybe-votes">
                                 <h2 class="accordion-header">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                            {{ 'disabled' if maybe_votes|length == 0 }}
+                                            {{ 'disabled' if poll.anonymous or maybe_votes|length == 0 }}
                                             data-bs-target="#maybe-{{ day }}"
                                             aria-expanded="false" aria-controls="maybe-{{ day }}">
                                         <strong>{{ maybe_votes|length }} maybe</strong>&nbsp;votes
@@ -72,20 +82,22 @@
                                      aria-labelledby="maybe-{{ day }}" data-bs-parent="#votes-{{ day }}"
                                      data-parent="#votes-{{ day }}">
                                     <div class="accordion-body">
-                                        {% for vote in maybe_votes %}
-                                            <a class="badge bg-secondary text-nowrap" tabindex="0"
-                                               data-bs-trigger="focus" data-bs-placement="top"
-                                               data-bs-toggle="popover" data-bs-content="{{ vote.time_created }}">
-                                                {{ vote.user_name | truncate(33, true) }}
-                                            </a>
-                                        {% endfor %}
+                                        {% if not poll.anonymous %}
+                                            {% for vote in maybe_votes %}
+                                                <a class="badge bg-secondary text-nowrap" tabindex="0"
+                                                   data-bs-trigger="focus" data-bs-placement="top"
+                                                   data-bs-toggle="popover" data-bs-content="{{ vote.time_created }}">
+                                                    {{ vote.user_name | truncate(33, true) }}
+                                                </a>
+                                            {% endfor %}
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
                             <div class="accordion-item ps-0 pe-0 no-votes">
                                 <h2 class="accordion-header">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                            {{ 'disabled' if no_votes|length == 0 }}
+                                            {{ 'disabled' if poll.anonymous or no_votes|length == 0 }}
                                             data-bs-target="#no-{{ day }}"
                                             aria-expanded="false" aria-controls="no-{{ day }}">
                                         <strong>{{ no_votes|length }} no</strong>&nbsp;votes
@@ -95,13 +107,15 @@
                                      aria-labelledby="no-{{ day }}" data-bs-parent="#votes-{{ day }}"
                                      data-parent="#votes-{{ day }}">
                                     <div class="accordion-body">
-                                        {% for vote in no_votes %}
-                                            <a class="badge bg-danger text-nowrap" tabindex="0"
-                                               data-bs-trigger="focus" data-bs-placement="top"
-                                               data-bs-toggle="popover" data-bs-content="{{ vote.time_created }}">
-                                                {{ vote.user_name | truncate(33, true) }}
-                                            </a>
-                                        {% endfor %}
+                                        {% if not poll.anonymous %}
+                                            {% for vote in no_votes %}
+                                                <a class="badge bg-danger text-nowrap" tabindex="0"
+                                                   data-bs-trigger="focus" data-bs-placement="top"
+                                                   data-bs-toggle="popover" data-bs-content="{{ vote.time_created }}">
+                                                    {{ vote.user_name | truncate(33, true) }}
+                                                </a>
+                                            {% endfor %}
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
