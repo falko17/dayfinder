@@ -47,7 +47,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text="Hi there! Use me to find a date everyone is available.",
+        text="Hi there! Use me to find a date everyone is available. You can use /help to get a list of commands.",
         reply_markup=InlineKeyboardMarkup(
             [
                 [
@@ -354,6 +354,21 @@ def exception_handler(loop: AbstractEventLoop, context: dict[str, Any]):
     logging.error(context["exception"])
 
 
+async def help_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """
+    Called when the user sends the /help command.
+    """
+    await update.effective_message.reply_text(
+        "This bot allows you to create polls to find a date everyone is available.\n\n"
+        "To create a new poll, click the button below or send /new.\n"
+        "To view a list of all your polls (and see results), send /polls.\n\n"
+        "You can also use this bot in inline mode: "
+        f"Just type <code>@{context.bot.username}</code> in any chat, then type the name of the poll you want to find. "
+        "This way, you can send the results page or the voting page to the current chat.",
+        parse_mode=ParseMode.HTML,
+    )
+
+
 async def main():
     logging.basicConfig(
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -378,6 +393,7 @@ async def main():
         CommandHandler("start", start, filters=filters.ChatType.PRIVATE),
         CommandHandler("results", results),
         CommandHandler("polls", polls),
+        CommandHandler("help", help_text),
         CallbackQueryHandler(callback_query),
         InlineQueryHandler(inline_query),
     ]
