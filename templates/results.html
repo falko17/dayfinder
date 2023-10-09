@@ -12,11 +12,13 @@
             The best option is <span class="best-option">highlighted</span>.
         </div>
         <div id="deleteButton" class="btn btn-danger mb-2" style="display: none">Delete poll</div>
+        <div id="shareVoteButton" class="btn btn-primary mb-2" style="display: none">Share voting link</div>
         <div id="expandButton" class="btn btn-primary mb-2 d-block">Expand all</div>
         <div class="mb-2">
             <ul class="list-group list-group-flush" id="selectedDaysList">
 
                 <input type="hidden" id="pollId" value="{{ poll.id }}">
+                <input type="hidden" id="botUsername" value="{{ bot_username }}">
                 <input type="hidden" id="ownerId" value="{{ poll.owner_id }}">
 
                 {% for day in poll.days %}

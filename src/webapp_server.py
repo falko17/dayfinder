@@ -274,7 +274,9 @@ async def results():
             404,
         )
     poll = shared_context.telegram_app.bot_data["events"][poll_id]
-    return await render_template("results.html", poll=poll, best_days=poll.best_days())
+    return await render_template("results.html",
+                                 poll=poll, best_days=poll.best_days(),
+                                 bot_username=shared_context.telegram_app.bot.username)
 
 
 @webapp.route("/")

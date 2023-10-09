@@ -1,4 +1,4 @@
-Telegram.WebApp.MainButton.setText('Share with chat').show().onClick(share);
+Telegram.WebApp.MainButton.setText('Share with chat').show().onClick(shareResults);
 
 // The button to expand or collapse all elements.
 let expandButton;
@@ -22,6 +22,10 @@ window.addEventListener('load', function () {
         const deleteButton = document.getElementById("deleteButton");
         deleteButton.style.display = "block";
         deleteButton.onclick = askDeletePoll;
+
+        const shareButton = document.getElementById("shareVoteButton");
+        shareButton.style.display = "block";
+        shareButton.onclick = askShareVote;
     }
 
     // We only want non-empty groups to be expandable.
@@ -69,9 +73,39 @@ function expandCollapseAll() {
 /**
  * Closes the webapp and allows the user to share the poll with a chat.
  */
-function share() {
+function shareResults() {
     const pollId = document.getElementById("pollId").value;
     Telegram.WebApp.switchInlineQuery(pollId, ["users", "groups", "channels"]);
+}
+
+function shareVote() {
+    const pollId = document.getElementById("pollId").value;
+    const botUsername = document.getElementById("botUsername").value;
+    const voteUrl = encodeURIComponent(`https://t.me/${botUsername}/vote?startapp=${pollId}`);
+    Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${voteUrl}`);
+}
+
+/**
+ * Asks the user if they want to share the voting link or the results link and calls the respective function.
+ */
+function askShareVote() {
+    Telegram.WebApp.showPopup({
+        title: "Share voting link?",
+        // Just to make sure the user understands what they're doing.
+        message: "Do you want to share the link to the voting page (where users can leave votes), " +
+            "or this results page? ",
+        buttons: [
+            {id: "ok", type: "default", text: "Share Voting Link"},
+            {id: "cancel", type: "cancel"},
+            {id: "other", type: "default", text: "Share Results Link"},
+        ]
+    }, (id) => {
+        if (id === "ok") {
+            shareVote();
+        } else if (id === "other") {
+            shareResults();
+        }
+    });
 }
 
 /**
