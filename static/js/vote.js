@@ -79,6 +79,8 @@ async function saveVote() {
         days[dayElement.dataset.day] = selectedOption.dataset.choice;
     }
 
+    Telegram.WebApp.MainButton.showProgress();
+
     try {
         const response = await fetch("/poll", {
             method: "PATCH",
@@ -113,6 +115,8 @@ async function saveVote() {
     } catch (e) {
         console.error(e);
         Telegram.WebApp.showAlert("An error occurred while sending your vote: " + e);
+    } finally {
+        Telegram.WebApp.MainButton.hideProgress();
     }
 }
 

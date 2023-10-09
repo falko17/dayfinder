@@ -103,6 +103,7 @@ async function savePoll(okay) {
         return;
     }
 
+    Telegram.WebApp.MainButton.showProgress();
     const title = document.getElementById("eventTitle").value;
     const description = document.getElementById("eventDescription").value;
     const notification = document.getElementById("eventNotification").checked;
@@ -130,6 +131,7 @@ async function savePoll(okay) {
         }
     } catch (e) {
         console.error(e);
+        Telegram.WebApp.MainButton.hideProgress();
         Telegram.WebApp.showAlert("An error occurred while sending the poll: " + e);
     }
 }

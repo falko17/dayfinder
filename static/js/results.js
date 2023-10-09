@@ -97,6 +97,7 @@ async function deletePoll(okay) {
         return;
     }
 
+    Telegram.WebApp.MainButton.showProgress();
     const pollId = document.getElementById("pollId").value;
     const response = await fetch("/poll", {
         method: "DELETE",
@@ -108,6 +109,7 @@ async function deletePoll(okay) {
             initData: Telegram.WebApp.initData,
         })
     });
+    Telegram.WebApp.MainButton.hideProgress();
     if (!response.ok) {
         const text = await response.text();
         Telegram.WebApp.showAlert("An error occurred while deleting the poll: " + text, Telegram.WebApp.close);
