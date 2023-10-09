@@ -2,6 +2,7 @@
 import asyncio
 import html
 import logging
+import pprint
 from asyncio import AbstractEventLoop
 from datetime import datetime
 from ssl import SSLError
@@ -18,7 +19,7 @@ from telegram import (
     InputTextMessageContent,
 )
 from telegram.constants import ParseMode
-from telegram.error import TimedOut
+from telegram.error import TimedOut, TelegramError
 from telegram.ext import (
     ApplicationBuilder,
     ContextTypes,
@@ -269,10 +270,17 @@ async def dump(update: Update, context: ContextTypes.DEFAULT_TYPE):
     Sends a dump of the bot's data to the user.
     This should only be callable by admins.
     """
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=str(shared_context.telegram_app.bot_data["events"]),
-    )
+    pprint.pprint(shared_context.telegram_app.bot_data["events"])
+    try:
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=str(shared_context.telegram_app.bot_data["events"]),
+        )
+    except TelegramError as e:
+        # Message is probably too long.
+        logging.warning(
+            f"Could not send dump to user {update.effective_user.id}: {e.message}"
+        )
 
 
 @webapp.before_serving
