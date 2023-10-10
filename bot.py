@@ -155,7 +155,7 @@ async def callback_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-def get_result_text(poll_id) -> str:
+def get_result_text(poll_id: str) -> str:
     """
     Generates the text for the results of the given poll.
     :param poll_id: The ID of the poll for which results shall be generated.
@@ -304,6 +304,7 @@ async def post_init(app: Application):
     """
     if "events" not in app.bot_data:
         app.bot_data["events"] = {}
+    await app.update_persistence()
 
 
 def exception_handler(loop: AbstractEventLoop, context: dict[str, Any]):
@@ -343,7 +344,7 @@ async def help_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def main():
     logging.basicConfig(
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        level=logging.INFO,
+        level=logging.INFO if not shared_context.args.debug else logging.DEBUG,
     )
 
     if not shared_context.args.enable_httpx_logging:
