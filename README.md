@@ -22,7 +22,7 @@ To create a poll:
 4. Click on "Create poll" to create the poll.
 5. The bot will send you a message with the voting link. You can share this link with others to let them vote in your poll. You can also use [inline mode](#inline-mode) to share the poll.
 
-TODO: Image here
+![image](https://github.com/falko17/dayfinder/assets/10247603/cd159add-a233-4ca4-958b-6b1f278aacc6)
 
 ### Voting in a poll
 To vote in a poll, simply click on the voting link you received from the poll creator. 
@@ -30,7 +30,8 @@ In the Mini App that opens, you can select "Yes/No/Maybe" for each available dat
 When you are done, click on "Confirm vote" to submit your vote.
 After you have voted, you can [view the results](#viewing-results) of the poll.
 
-TODO: Image here
+![image](https://github.com/falko17/dayfinder/assets/10247603/7beec8b3-f253-47eb-9bce-7d092062b4de)
+
 
 > [!note]
 > To edit your vote, click on the voting link again and change your vote. Your previous vote will be overwritten.
@@ -43,7 +44,8 @@ To get a link to the results of a poll, you have the following options:
     - [List your polls](#listing-your-polls), and click on the poll you want to view the results of.
     - Use [inline mode](#inline-mode) to search for the poll and select "View results".
 
-TODO: Image here
+![image](https://github.com/falko17/dayfinder/assets/10247603/bd3471bd-36c4-4918-be94-5998946adc2a)
+
 
 On the results page, you can see the number of yes/no/maybe votes for each date.
 If the poll is not anonymous, you can also click on these numbers to see who voted for which dates.
