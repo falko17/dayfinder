@@ -7,7 +7,7 @@ This is a Telegram bot that allows users to create polls to find a date everyone
 ## Table of contents
 - [**Usage**](#usage): Describes how to use the bot to create and share polls.
 - [**Setup**](#setup): Instructs how to set up and run your own instance of the bot on a server.
-- [**Development**](#development): Contains information about the development (e.g., source code structure) of the bot.
+- [**Developer information**](#developer-information): Contains information about the development (e.g., source code structure) of the bot.
 
 ## Usage
 The bot is available on Telegram as [@dayfinderbot](https://t.me/dayfinderbot).
@@ -77,9 +77,7 @@ Alternatively, you can click on the small icon to the left of the option to open
     - The SSL certificate is required to use the Mini App in Telegram, since only HTTPS links are supported.
     - You can obtain a free SSL certificate from [Let's Encrypt](https://letsencrypt.org/getting-started).
 
-### Steps
-
-#### Preparing the web server
+### Preparing the web server
 Before you start, you need to think about how you want to host the web app,
 since it needs to be accessible from the outside.
 The recommended way is to use a reverse proxy, such as [nginx](https://www.nginx.com/),
@@ -90,7 +88,7 @@ Going into detail on how to set up a reverse proxy is beyond the scope of this g
 Alternatively, you can pass the SSL certificate and keyfile to the web app directly and let it handle the HTTPS encryption.
 Note that if you do this and use a port other than 443, you will have to specify the port in the Mini App URL (e.g., `https://example.com:8080`).
 
-#### Preparing the Telegram bot
+### Preparing the Telegram bot
 This assumes you have a bot already (see [Prerequisites](#prerequisites)).
 All these steps can be done by talking to [@BotFather](https://t.me/BotFather) on Telegram.
 
@@ -107,7 +105,7 @@ polls - View your polls
 help - Get help for this bot
 ```
 
-#### Running Dayfinder
+### Running Dayfinder
 > [!important]
 > These steps assume you are using a Linux server.
 > If you are using a different operating system, you will have to adapt the commands accordingly.
@@ -116,19 +114,15 @@ help - Get help for this bot
 2. Create a virtual environment for the bot (`python3 -m venv venv`) and activate it (`source venv/bin/activate`).
     - Whenever you reopen your terminal, you will have to activate the virtual environment again.
 3. Install the dependencies listed in [`requirements.txt`](requirements.txt) (`pip install -r requirements.txt`).
-4. The web app and the Telegram bot run in parallel, so you only need to execute one command to run both: `python3 bot.py --token TOKEN --web-url URL`, where `TOKEN` is the token of your Telegram bot and `URL` is the URL where the web app (e.g., `https://example.com/dayfinder`) will be hosted.
+4. The web app and the Telegram bot run in parallel, so you only need to execute one command to run both: `python3 bot.py --token TOKEN --web-url URL`, where `TOKEN` is the token of your Telegram bot and `URL` is the URL where the web app (e.g., `https://dayfinder.example.com`) will be hosted.
     - By default, the web app will listen on port 8080 and host 0.0.0.0. You can change these settings with the `--web-port` and `--web-host` options.
     - If you are *not* using a reverse proxy, you will have to pass the SSL certificate and keyfile to the web app with the `--web-certfile` and `--web-keyfile` options. If these options are not passed, the web app will use HTTP.
     - Review all available options with `python3 bot.py --help`.
-5. Send your bot the `/start` command on Telegram. This will also initialize the poll persistence file.
+5. Start testing the bot by sending it the `/start` command on Telegram.
 6. To stop the program, press Ctrl+C. Note that it may take a few seconds for the program to shut down properly.
 
-## Development
-<!-- Pass your Telegram ID to `--admin-ids` if you want to be able to use the admin-only `/dump` command, which dumps the bot data to the current chat. -->
-TODO
-
-## Troubleshooting
-TODO
+## Developer information
+See [`DEVELOPMENT.md`](DEVELOPMENT.md) for developer information.
 
 ## License
 This project is licensed under the terms of the [MIT license](LICENSE).
