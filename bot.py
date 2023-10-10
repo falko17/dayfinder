@@ -46,6 +46,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Called when the user starts the bot.
     """
+    if 'events' not in context.bot_data:
+        context.bot_data['events'] = {}
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text="Hi there! Use me to find a date everyone is available. You can use /help to get a list of commands.",

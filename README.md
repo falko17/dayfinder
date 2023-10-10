@@ -59,10 +59,76 @@ For each poll of yours, you will get the option to send the voting link or the r
 Alternatively, you can click on the small icon to the left of the option to open the page yourself without sending it.
 
 ## Setup
-TODO
+> [!note]
+> You only need to consult this section if you want to host your own instance of the bot.
+> If you just want to use the bot, you can use `@dayfinderbot` on Telegram.
+
+### Prerequisites
+- [Python 3.11+](https://www.python.org/downloads/)
+  - Verify your installation by running `python3 --version`.
+- All dependencies listed in [`requirements.txt`](requirements.txt) (can be installed with `pip install -r requirements.txt`):
+    - [python-telegram-bot](https://python-telegram-bot.org/), which is used to interact with the Telegram Bot API
+    - [Quart](https://palletsprojects.com/p/quart/), which is used to run the web server hosting the Mini App
+- A [Telegram bot](#creating-a-telegram-bot) token
+    - Can be obtained by talking to [@BotFather](https://t.me/BotFather) on Telegram. You can use the `/newbot` command to create a new bot.
+    - You will receive a token for your bot. Keep this token secret, as it allows anyone to control your bot.
+- A domain name and an SSL certificate for your domain
+    - The domain name is used to host the Mini App.
+    - The SSL certificate is required to use the Mini App in Telegram, since only HTTPS links are supported.
+    - You can obtain a free SSL certificate from [Let's Encrypt](https://letsencrypt.org/getting-started).
+
+### Steps
+
+#### Preparing the web server
+Before you start, you need to think about how you want to host the web app,
+since it needs to be accessible from the outside.
+The recommended way is to use a reverse proxy, such as [nginx](https://www.nginx.com/),
+to forward requests to the web app.
+This way, you can host the web app on a local port and let the reverse proxy handle the HTTPS encryption.
+Going into detail on how to set up a reverse proxy is beyond the scope of this guide, but there are plenty of good resources available online (for example, you can take a look at [the nginx documentation](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/).
+
+Alternatively, you can pass the SSL certificate and keyfile to the web app directly and let it handle the HTTPS encryption.
+Note that if you do this and use a port other than 443, you will have to specify the port in the Mini App URL (e.g., `https://example.com:8080`).
+
+#### Preparing the Telegram bot
+This assumes you have a bot already (see [Prerequisites](#prerequisites)).
+All these steps can be done by talking to [@BotFather](https://t.me/BotFather) on Telegram.
+
+1. Use `/newapp` to setup the `vote` webapp. 
+    - When asked for the web app URL, enter the URL where the web app will be hosted with the path `/vote` appended (e.g., `https://dayfinder.example.com/vote`). 
+    - When asked for the short name for the web app, enter `vote`.
+2. Repeat the above step for the `results` webapp, i.e., substitute `/vote` with `/results` and `vote` with `results`.
+3. Enable inline mode for your bot by using the `/setinline` command.
+4. Set the menu button to open the create page by using the `/setmenubutton` command and submitting the URL of the webapp with the path `/create` appended (e.g., `https://dayfinder.example.com/create`).
+5. (Optional) Talk to [@BotFather](https://t.me/BotFather) on Telegram and use the `/setcommands` command to set the bot's commands to the following: 
+```
+start - Create a new poll
+polls - View your polls
+help - Get help for this bot
+```
+
+#### Running Dayfinder
+> [!important]
+> These steps assume you are using a Linux server.
+> If you are using a different operating system, you will have to adapt the commands accordingly.
+
+1. Clone this repository (`git clone https://github.com/falko17/dayfinder`) and change into the cloned directory (`cd dayfinder`).
+2. Create a virtual environment for the bot (`python3 -m venv venv`) and activate it (`source venv/bin/activate`).
+    - Whenever you reopen your terminal, you will have to activate the virtual environment again.
+3. Install the dependencies listed in [`requirements.txt`](requirements.txt) (`pip install -r requirements.txt`).
+4. The web app and the Telegram bot run in parallel, so you only need to execute one command to run both: `python3 bot.py --token TOKEN --web-url URL`, where `TOKEN` is the token of your Telegram bot and `URL` is the URL where the web app (e.g., `https://example.com/dayfinder`) will be hosted.
+    - By default, the web app will listen on port 8080 and host 0.0.0.0. You can change these settings with the `--web-port` and `--web-host` options.
+    - If you are *not* using a reverse proxy, you will have to pass the SSL certificate and keyfile to the web app with the `--web-certfile` and `--web-keyfile` options. If these options are not passed, the web app will use HTTP.
+    - Review all available options with `python3 bot.py --help`.
+5. Send your bot the `/start` command on Telegram. This will also initialize the poll persistence file.
+6. To stop the program, press Ctrl+C. Note that it may take a few seconds for the program to shut down properly.
 
 ## Development
+<!-- Pass your Telegram ID to `--admin-ids` if you want to be able to use the admin-only `/dump` command, which dumps the bot data to the current chat. -->
 TODO
 
 ## Troubleshooting
 TODO
+
+## License
+This project is licensed under the terms of the [MIT license](LICENSE).
