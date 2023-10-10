@@ -2,7 +2,7 @@
 
 This is a Telegram bot that allows users to create polls to find a date everyone is available.
 
-![image](https://github.com/falko17/dayfinder/assets/10247603/7beec8b3-f253-47eb-9bce-7d092062b4de)
+![image](https://github.com/falko17/dayfinder/assets/10247603/81df2350-9bc1-4c9f-9e74-817d373158d9)
 
 ## Table of contents
 - [**Usage**](#usage): Describes how to use the bot to create and share polls.
