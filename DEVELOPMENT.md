@@ -1,6 +1,21 @@
 # Development Information
 
-TODO: What's in here?
+This file contains detailed information about the development of the bot.
+It is only relevant if you want to contribute to the bot or host your own instance of it.
+Note that additional documentation is available in the source code itself.
+
+## Table of contents
+- [Project structure](#project-structure): Contains a short overview of the files and directories in this repository.
+- [Asynchronous execution](#asynchronous-execution): Contains information about how the bot and web server are run asynchronously in the same process.
+- [Shared data models](#shared-data-models): Contains information about the shared data models used by both the bot and the web server.
+- [Implementation details](#implementation-details): Contains information about the implementation details of the bot and web server.
+    - [Telegram bot](#telegram-bot): Contains information about the implementation of the Telegram bot.
+    - [Web server](#web-server): Contains information about the implementation of the web server.
+    - [Web pages](#web-pages): Contains information about the implementation of the web pages.
+        - [HTML](#html): Contains information about the HTML templates.
+        - [CSS](#css): Contains information about the CSS style.
+        - [JavaScript](#javascript): Contains information about the JavaScript files.
+    - [Debugging](#debugging): Contains some tips on how to debug the bot.
 
 ## Project structure
 Here's a short overview of the files and directories in this repository:
