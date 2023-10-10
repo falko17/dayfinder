@@ -23,11 +23,6 @@ window.addEventListener('load', function () {
         deleteButton.classList.remove("d-none");
         deleteButton.classList.add("d-block");
         deleteButton.onclick = askDeletePoll;
-
-        const shareButton = document.getElementById("shareVoteButton");
-        shareButton.classList.remove("d-none");
-        shareButton.classList.add("d-block");
-        shareButton.onclick = askShareVote;
     }
 
     const isAnonymous = document.getElementById("isAnonymous").value === "True";
@@ -82,51 +77,32 @@ function expandCollapseAll() {
  */
 function shareResults() {
     const pollId = document.getElementById("pollId").value;
-    Telegram.WebApp.switchInlineQuery(pollId, ["users", "groups", "channels"]);
+    // We prefer sharing the results via inline query, but if that's not possible, we fall back to sharing the link.
+    if (Telegram.WebApp.isVersionAtLeast("6.7")) {
+        Telegram.WebApp.switchInlineQuery(pollId, ["users", "groups", "channels"]);
+    } else {const pollId = document.getElementById("pollId").value;
+        const botUsername = document.getElementById("botUsername").value;
+        const resultsUrl = encodeURIComponent(`https://t.me/${botUsername}/results?startapp=${pollId}`);
+        Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${resultsUrl}`);
+    }
 }
 
-function shareVote() {
-    const pollId = document.getElementById("pollId").value;
-    const botUsername = document.getElementById("botUsername").value;
-    const voteUrl = encodeURIComponent(`https://t.me/${botUsername}/vote?startapp=${pollId}`);
-    Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${voteUrl}`);
-}
-
-/**
- * Asks the user if they want to share the voting link or the results link and calls the respective function.
- */
-function askShareVote() {
-    Telegram.WebApp.showPopup({
-        title: "Share voting link?",
-        // Just to make sure the user understands what they're doing.
-        message: "Do you want to share the link to the voting page (where users can leave votes), " +
-            "or this results page? ",
-        buttons: [
-            {id: "ok", type: "default", text: "Share Voting Link"},
-            {id: "cancel", type: "cancel"},
-            {id: "other", type: "default", text: "Share Results Link"},
-        ]
-    }, (id) => {
-        if (id === "ok") {
-            shareVote();
-        } else if (id === "other") {
-            shareResults();
-        }
-    });
-}
 
 /**
  * Asks the user if they really want to delete the poll and calls deletePoll if they confirm.
  */
 function askDeletePoll() {
-    Telegram.WebApp.showPopup({
+    const confirmText = "Are you sure you want to delete this poll and all of its responses? This cannot be undone!";
+    runOnVersion('6.20', () => Telegram.WebApp.showPopup({
         title: "Delete poll?",
-        message: "Are you sure you want to delete this poll and all of its responses? This cannot be undone!",
+        message: confirmText,
         buttons: [
             {id: "ok", type: "destructive", text: "Delete Poll"},
             {id: "cancel", type: "cancel"},
         ]
-    }, (id) => deletePoll(id === "ok"));
+    }, (id) => deletePoll(id === "ok")),
+        // On older versions, we use the browser's confirm dialog.
+        () => deletePoll(confirm(confirmText)));
 }
 
 /**
@@ -153,7 +129,7 @@ async function deletePoll(okay) {
     Telegram.WebApp.MainButton.hideProgress();
     if (!response.ok) {
         const text = await response.text();
-        Telegram.WebApp.showAlert("An error occurred while deleting the poll: " + text, Telegram.WebApp.close);
+        showAlert("An error occurred while deleting the poll: " + text, Telegram.WebApp.close);
     } else {
         Telegram.WebApp.close();
     }

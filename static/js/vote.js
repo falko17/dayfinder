@@ -5,7 +5,8 @@ window.addEventListener('load', function () {
     // We want to display all dates in the user's locale.
     replaceDateElements();
 
-    Telegram.WebApp.enableClosingConfirmation();
+    // Rather than attach listeners to each day, we enable the closing confirmation directly.
+    runOnVersion('6.2', Telegram.WebApp.enableClosingConfirmation);
 
     loadExistingVote().then(() => {});  // then-clause exists only to avoid warning about unresolved promise.
 });
@@ -18,7 +19,7 @@ async function loadExistingVote() {
     const response = await fetch("/poll?" + Telegram.WebApp.initData);
     if (!response.ok) {
         const text = await response.text();
-        Telegram.WebApp.showAlert("An error occurred while loading your vote: " + text, Telegram.WebApp.close);
+        showAlert("An error occurred while loading your vote: " + text, Telegram.WebApp.close);
         return;
     }
 
@@ -94,9 +95,9 @@ async function saveVote() {
         });
         if (!response.ok) {
             const text = await response.text();
-            Telegram.WebApp.showAlert("An error occurred while sending your vote: " + text, Telegram.WebApp.close);
+            showAlert("An error occurred while sending your vote: " + text, Telegram.WebApp.close);
         } else {
-            Telegram.WebApp.showPopup({
+            runOnVersion('6.2', () => Telegram.WebApp.showPopup({
                 title: "Vote sent",
                 message: "Your vote has been sent. Do you want to view the results now?",
                 buttons: [
@@ -110,11 +111,11 @@ async function saveVote() {
                         type: "close",
                     }
                 ]
-            }, id => leave(id === "viewResults"));
+            }, id => leave(id === "viewResults")), () => leave(true));
         }
     } catch (e) {
         console.error(e);
-        Telegram.WebApp.showAlert("An error occurred while sending your vote: " + e);
+        showAlert("An error occurred while sending your vote: " + e);
     } finally {
         Telegram.WebApp.MainButton.hideProgress();
     }

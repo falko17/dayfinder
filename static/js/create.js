@@ -30,7 +30,7 @@ window.addEventListener('load', function () {
  */
 function enableClosingConfirmation() {
     if (!closingConfirmationEnabled) {
-        Telegram.WebApp.enableClosingConfirmation();
+        runOnVersion('6.2', Telegram.WebApp.enableClosingConfirmation);
         closingConfirmationEnabled = true;
     }
 }
@@ -91,7 +91,12 @@ function pressCreate() {
         return;
     }
 
-    Telegram.WebApp.showConfirm("Do you want to save the poll? You cannot edit it later.", savePoll);
+    const confirmText = "Do you want to save the poll? You cannot edit it later.";
+
+    runOnVersion("6.2",
+        () => Telegram.WebApp.showConfirm(confirmText, savePoll),
+        // If dialogs are not supported, we fall back to a browser confirm dialog.
+        () => savePoll(confirm(confirmText)));
 }
 
 /**
@@ -127,14 +132,14 @@ async function savePoll(okay) {
         });
         if (!response.ok) {
             const text = await response.text();
-            Telegram.WebApp.showAlert("An error occurred while sending the poll: " + text, () => Telegram.WebApp.close());
+            showAlert("An error occurred while sending the poll: " + text, () => Telegram.WebApp.close());
         } else {
             Telegram.WebApp.close();
         }
     } catch (e) {
         console.error(e);
         Telegram.WebApp.MainButton.hideProgress();
-        Telegram.WebApp.showAlert("An error occurred while sending the poll: " + e);
+        showAlert("An error occurred while sending the poll: " + e);
     }
 }
 

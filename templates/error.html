@@ -2,8 +2,7 @@
 {% block title %}{% endblock %}
 {% block content %}
 <script>
-    // Simply display the error message and close the app.
-    Telegram.WebApp.ready();
-    Telegram.WebApp.showAlert("{{ error }}", Telegram.WebApp.close);
+    // Display the error message and close the app.
+    showAlert("{{ error }}", Telegram.WebApp.close);
 </script>
 {% endblock %}

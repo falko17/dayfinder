@@ -257,7 +257,7 @@ def get_inline_query_results(
     result_articles = [
         InlineQueryResultArticle(
             id=str(poll.id) + "-results",
-            title=f"Results for {poll.title}"[:70],
+            title=f'Results for "{poll.title}"'[:70],
             description="Click to send the results page for this poll.",
             url=f"https://t.me/{bot_name}/results?startapp={str(poll.id)}",
             hide_url=True,
@@ -271,7 +271,7 @@ def get_inline_query_results(
         result_articles.append(
             InlineQueryResultArticle(
                 id=str(poll.id) + "-vote",
-                title=f"Voting page for {poll.title}"[:70],
+                title=f'Voting page for "{poll.title}"'[:70],
                 description="Click to send the voting page for this poll.",
                 url=f"https://t.me/{bot_name}/vote?startapp={str(poll.id)}",
                 hide_url=True,
