@@ -5,11 +5,17 @@ window.addEventListener('load', function () {
     // We want to display all dates in the user's locale.
     replaceDateElements();
 
-    // Rather than attach listeners to each day, we enable the closing confirmation directly.
-    runOnVersion('6.2', Telegram.WebApp.enableClosingConfirmation);
+    document.querySelectorAll("input[type=radio]").forEach(onRadioClick);
 
     loadExistingVote().then(() => {});  // then-clause exists only to avoid warning about unresolved promise.
 });
+
+function onRadioClick(radio) {
+    // When the user enters a vote, the closing confirmation should be enabled.
+    radio.addEventListener("input", () => {
+        runOnVersion('6.2', Telegram.WebApp.enableClosingConfirmation);
+    });
+}
 
 /**
  * Loads an existing vote from the server and displays it, if it exists.
@@ -62,8 +68,11 @@ function validateForm() {
  */
 function confirmVote() {
     if (validateForm()) {
+        runOnVersion('6.1', () => Telegram.WebApp.HapticFeedback.notificationOccurred("success"));
         // Since users can edit their votes, we do not need to ask for confirmation.
         saveVote().then(() => {});  // then-clause exists only to avoid warning about unresolved promise.
+    } else {
+        runOnVersion('6.1', () => Telegram.WebApp.HapticFeedback.notificationOccurred("error"));
     }
 }
 

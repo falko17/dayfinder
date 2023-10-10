@@ -92,8 +92,9 @@ function shareResults() {
  * Asks the user if they really want to delete the poll and calls deletePoll if they confirm.
  */
 function askDeletePoll() {
+    runOnVersion('6.1', () => Telegram.WebApp.HapticFeedback.notificationOccurred("warning"));
     const confirmText = "Are you sure you want to delete this poll and all of its responses? This cannot be undone!";
-    runOnVersion('6.20', () => Telegram.WebApp.showPopup({
+    runOnVersion('6.2', () => Telegram.WebApp.showPopup({
         title: "Delete poll?",
         message: confirmText,
         buttons: [
@@ -129,8 +130,10 @@ async function deletePoll(okay) {
     Telegram.WebApp.MainButton.hideProgress();
     if (!response.ok) {
         const text = await response.text();
+        runOnVersion('6.1', () => Telegram.WebApp.HapticFeedback.notificationOccurred("error"));
         showAlert("An error occurred while deleting the poll: " + text, Telegram.WebApp.close);
     } else {
+        runOnVersion('6.1', () => Telegram.WebApp.HapticFeedback.notificationOccurred("success"));
         Telegram.WebApp.close();
     }
 }

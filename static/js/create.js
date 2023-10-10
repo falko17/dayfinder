@@ -88,6 +88,7 @@ function validateForm() {
  */
 function pressCreate() {
     if (!validateForm()) {
+        runOnVersion('6.1', () => Telegram.WebApp.HapticFeedback.notificationOccurred("error"));
         return;
     }
 
@@ -132,6 +133,7 @@ async function savePoll(okay) {
         });
         if (!response.ok) {
             const text = await response.text();
+            runOnVersion('6.1', () => Telegram.WebApp.HapticFeedback.notificationOccurred("error"));
             showAlert("An error occurred while sending the poll: " + text, () => Telegram.WebApp.close());
         } else {
             Telegram.WebApp.close();
@@ -139,6 +141,7 @@ async function savePoll(okay) {
     } catch (e) {
         console.error(e);
         Telegram.WebApp.MainButton.hideProgress();
+        runOnVersion('6.1', () => Telegram.WebApp.HapticFeedback.notificationOccurred("error"));
         showAlert("An error occurred while sending the poll: " + e);
     }
 }
@@ -215,5 +218,6 @@ function reorderDay(day) {
  * @param day The day that should be removed.
  */
 function removeDay(day) {
+    runOnVersion('6.1', () => Telegram.WebApp.HapticFeedback.impactOccurred("light"));
     dayList.removeChild(day);
 }

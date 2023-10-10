@@ -3,6 +3,7 @@
 {% block content %}
 <script>
     // Display the error message and close the app.
+    runOnVersion('6.1', () => Telegram.WebApp.HapticFeedback.notificationOccurred("error"));
     showAlert("{{ error }}", Telegram.WebApp.close);
 </script>
 {% endblock %}
