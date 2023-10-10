@@ -39,6 +39,7 @@ from src.webapp_server import run_webapp_server, webapp
 
 # TODO: Python 3.8+ – check compatibility
 # TODO: Docs: BotFather notice for menu button (for /newapp)
+# TODO: Close poll?
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -48,33 +49,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text="Hi there! Use me to find a date everyone is available. You can use /help to get a list of commands.",
-        reply_markup=InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        "Create new poll",
-                        web_app=WebAppInfo(url=f"{shared_context.args.web_url}/create"),
-                    )
-                ]
-            ]
-        ),
-    )
-
-
-async def new(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """
-    Called when the user clicks the "Create new poll" button or sends the /new command.
-    """
-    # If called in group chat, message privately (web apps cannot be started this way in groups).
-    if update.effective_chat.type != "private":
-        await update.effective_message.reply_text(
-            "Please message me privately to create a new poll.",
-            reply_markup=ReplyKeyboardRemove(),
-        )
-        return
-
-    await update.effective_message.reply_text(
-        "Create a new poll by clicking the button below.",
         reply_markup=InlineKeyboardMarkup(
             [
                 [
@@ -360,7 +334,7 @@ async def help_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     await update.effective_message.reply_text(
         "This bot allows you to create polls to find a date everyone is available.\n\n"
-        "To create a new poll, click the button below or send /new.\n"
+        "To create a new poll, click the button below or send /start.\n"
         "To view a list of all your polls (and see results), send /polls.\n\n"
         "You can also use this bot in inline mode: "
         f"Just type <code>@{context.bot.username}</code> in any chat, then type the name of the poll you want to find. "
