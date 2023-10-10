@@ -123,6 +123,11 @@ hr {
     color: var(--tg-theme-hint-color, inherit);
 }
 
+a.badge {
+    /* Don't underline the badges' text. */
+    text-decoration: none;
+}
+
 /* The following styles are for the accordion. */
 
 .accordion {

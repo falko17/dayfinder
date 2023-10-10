@@ -289,7 +289,7 @@ async def index():
     'Renders' the index page.
     It's really just a string of text, so there's not a lot to render.
     """
-    return "The DayFinder WebApp is hosted here. There's nothing on this page, though."
+    return "The Dayfinder WebApp is hosted here. There's nothing on this page, though."
 
 
 async def run_webapp_server():
