@@ -292,6 +292,13 @@ async def index():
     return "The Dayfinder WebApp is hosted here. There's nothing on this page, though."
 
 
+@webapp.after_request
+async def add_header(response):
+    # We need to allow the webapp to be embedded within the Telegram webapp.
+    response.headers["Content-Security-Policy"] = "frame-ancestors 'self' https://*.telegram.org"
+    return response
+
+
 async def run_webapp_server():
     await webapp.run_task(
         host=shared_context.args.web_host,
